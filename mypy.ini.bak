@@ -1,0 +1,22 @@
+﻿[mypy]
+python_version = 3.10
+warn_return_any = True
+warn_unused_configs = True
+disallow_untyped_defs = True
+namespace_packages = True
+explicit_package_bases = True
+mypy_path = .
+follow_imports = skip
+
+[mypy-app.*]
+follow_imports = normal
+disallow_untyped_defs = True
+
+[mypy-numpy.*]
+ignore_missing_imports = True
+
+[mypy-pydantic.*]
+ignore_missing_imports = True
+
+[mypy-pydantic_settings.*]
+ignore_missing_imports = True

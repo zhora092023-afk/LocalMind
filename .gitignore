@@ -1,0 +1,105 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+.project
+.pydevproject
+.settings/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.yaml
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Project specific
+mindmap.html
+debug_data.json
+test_*.py
+debug_*.py
+temple/
+*.pyc
+*.pyo
+*.pyd
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Local configuration
+.env.local
+.env.*.local
+config.local.py
+
+# Generated files
+*.html
+*.pdf
+*.png
+*.jpg
+*.jpeg
+
+# Ollama models (если будут)
+models/
+
+# Office
+.docx
+.xlsx
+.txt

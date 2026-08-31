@@ -1,0 +1,137 @@
+- id: "MYPY-001"
+  date: "2026-08-29"
+  module: "build_system"
+  error_message: "Source file found twice under different module names"
+  context: "Запуск mypy --strict из корня проекта с in-place структурой папок"
+  root_cause: "Mypy не знал, как интерпретировать пространства имён. Файл app/domain/schemas.py был виден и как domain.schemas, и как app.domain.schemas."
+  solution: "Добавить в mypy.ini опции namespace_packages = True и explicit_package_bases = True, а также прописать mypy_path = ."
+  verification: "Команда mypy --explicit-package-bases app/ --strict теперь выполняется без ошибок"
+  assigned_to: "Архитектор"
+  tags: ["mypy", "imports", "strict_mode"]
+
+- id: "MYPY-002"
+  date: "2026-08-29"
+  module: "build_system"
+  error_message: "No [mypy] section in config file"
+  context: "Попытка использовать TOML-синтаксис в INI-файле mypy.ini"
+  root_cause: "Файл mypy.ini должен строго соответствовать INI-формату, без квадратных скобок для переопределений модулей."
+  solution: "Использовать чистый INI-формат без [[...]] секций. Для переопределений модулей используется синтаксис [mypy-имя_модуля.*]."
+  verification: "mypy --explicit-package-bases app/ --strict проходит без ошибок"
+  assigned_to: "Архитектор"
+  tags: ["mypy", "config", "ini"]
+
+- id: "MYPY-003"
+  date: "2026-08-29"
+  module: "build_system"
+  error_message: "Type statement is only supported in Python 3.12 and greater"
+  context: "mypy пытался проверить файл numpy/__init__.pyi, который использует синтаксис Python 3.12"
+  root_cause: "mypy по умолчанию следует за всеми импортами, включая установленные библиотеки"
+  solution: "Добавить в mypy.ini настройку follow_imports = skip для глобальной секции и включить нормальное следование только для app.* через переопределение"
+  verification: "mypy app/domain/schemas.py app/interfaces.py app/core/config.py app/main.py --ignore-missing-imports завершается успешно"
+  assigned_to: "Архитектор"
+  tags: ["mypy", "imports", "numpy", "follow_imports"]
+
+- id: "MYPY-004"
+  date: "2026-08-29"
+  module: "build_system"
+  error_message: "UnicodeDecodeError: 'charmap' codec can't decode byte 0x98"
+  context: "Постоянные ошибки при чтении mypy.ini из-за невидимых символов в кодировке cp1251 на Windows"
+  root_cause: "Windows-система с кодировкой cp1251 не может прочитать файл mypy.ini, даже если он создан в UTF-8 через PowerShell"
+  solution: "Временно отказаться от использования mypy.ini и проверять файлы по отдельности с флагом --ignore-missing-imports. Альтернатива: использовать pytest с плагином mypy или настроить CI на Linux-системе."
+  verification: "mypy app/domain/schemas.py app/interfaces.py app/core/config.py app/main.py --ignore-missing-imports завершается успешно"
+  assigned_to: "Архитектор"
+  tags: ["mypy", "windows", "encoding", "cp1251", "workaround"]
+
+- id: "JUPYTER-001"
+  date: "2026-08-29"
+  module: "development_environment"
+  error_message: "RuntimeError: asyncio.run() cannot be called from a running event loop"
+  context: "Запуск асинхронного кода в Jupyter Notebook"
+  root_cause: "В Jupyter уже есть запущенный асинхронный цикл событий, поэтому нельзя вызывать asyncio.run() внутри него"
+  solution: "Использовать await test() напрямую в ячейке вместо asyncio.run(test()). Для консольных скриптов использовать asyncio.run() внутри if __name__ == '__main__':"
+  verification: "Код успешно выполняется как в Jupyter, так и в консоли"
+  assigned_to: "Архитектор"
+  tags: ["asyncio", "jupyter", "development"]
+
+- id: "JUPYTER-002"
+  date: "2026-08-30"
+  module: "parsing"
+  error_message: "invalid character '—' (U+2014) in Jupyter notebook"
+  root_cause: "Длинное тире в коде или docstring вместо дефиса"
+  solution: "Заменить длинное тире '—' на обычный дефис '-'"
+  tags: ["jupyter", "syntax", "unicode"]
+
+- id: "JUPYTER-003"
+  date: "2026-08-30"
+  module: "parsing"
+  error_message: "invalid character '⚠' (U+26A0) in Jupyter notebook"
+  root_cause: "Эмодзи в коде без кавычек"
+  solution: "Заменить эмодзи на текст или заключить в кавычки"
+  tags: ["jupyter", "syntax", "unicode"]
+
+- id: "JUPYTER-004"
+  date: "2026-08-30"
+  module: "parsing"
+  error_message: "Line numbers in Jupyter are global, not per-cell"
+  root_cause: "Jupyter нумерует строки глобально, включая Markdown-ячейки"
+  solution: "Показывать номер ячейки + локальный номер строки"
+  tags: ["jupyter", "parsing", "line_numbers"]
+
+
+
+
+
+
+- id: "PROJECT-001"
+  date: "2026-08-29"
+  module: "architecture"
+  error_message: "Отсутствие __init__.py файлов в пакетах"
+  context: "Создание структуры проекта с вложенными пакетами"
+  root_cause: "Mypy и Python требуют __init__.py для корректного распознавания пакетов, даже если используются namespace_packages"
+  solution: "Всегда создавать __init__.py файлы во всех вложенных папках проекта, даже если они пустые"
+  verification: "Все импорты работают корректно, mypy не выдаёт ошибок о пропущенных файлах"
+  assigned_to: "Архитектор"
+  tags: ["python", "packages", "init"]
+
+- id: "AI_AGENT-001"
+  date: "2026-08-29"
+  module: "ai_analyzer"
+  error_message: "Первая версия AI-агента использует только регулярные выражения"
+  context: "Реализация агента для извлечения сущностей из кода"
+  root_cause: "Для быстрого прототипа использовали простой парсинг вместо полноценного AI (Ollama)"
+  solution: "В будущем заменить регулярные выражения на вызовы локального AI для более точного анализа. Для начала оставить парсинг как fallback."
+  verification: "Агент успешно находит классы, функции и импорты в Python и JavaScript файлах"
+  assigned_to: "AI Analyzer Agent"
+  tags: ["ai", "parsing", "prototype", "future_improvement"]
+
+  - id: "VIS-001"
+  date: "2026-08-29"
+  module: "visualization"
+  error_message: "Uncaught ReferenceError: vis is not defined"
+  context: "Загрузка vis-network с CDN при открытии HTML локально (file:// протокол)"
+  root_cause: "Браузер блокирует загрузку скриптов с CDN из-за политики CORS при использовании file:// протокола"
+  solution: |
+    1. Использовать альтернативный CDN (unpkg.com)
+    2. Скачать библиотеку локально и подключать её
+    3. Запускать локальный HTTP-сервер (python -m http.server)
+  verification: "Граф успешно отображается в браузере при использовании https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"
+  assigned_to: "Агент Mindmap Generator"
+  tags: ["vis-network", "cors", "cdn", "visualization", "javascript"]
+
+- id: "CLI-001"
+  date: "2026-08-30"
+  module: "cli"
+  error_message: "localmind analyze не работает"
+  root_cause: "Команда должна быть localmind <путь>, без 'analyze'"
+  solution: "Использовать localmind <путь_к_папке>"
+  tags: ["cli", "usage"]
+
+- id: "PDF-001"
+  date: "2026-08-30"
+  module: "pdf"
+  error_message: "PDF-отчёт содержит только базовую статистику"
+  root_cause: "Используется упрощённая генерация через ReportLab"
+  solution: "Добавить визуализацию, таблицы с сущностями, цветовую индикацию"
+  tags: ["pdf", "reportlab", "enhancement"]
+
+  
