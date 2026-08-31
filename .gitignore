@@ -103,3 +103,5 @@ models/
 *.docx
 *.xlsx
 *.txt
+!requirements.txt
+LESSONS_LEARNED.yaml
